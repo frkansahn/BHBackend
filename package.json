@@ -1,0 +1,59 @@
+{
+  "name": "apidemo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+    "supervisor": "supervisor app.js"
+  },
+  "engines": {
+    "node": ">=14.18.0"
+  },
+  "dependencies": {
+    "await-sleep": "0.0.1",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
+    "debug": "^2.6.9",
+    "dirty-json": "^0.9.2",
+    "dotenv": "^8.2.0",
+    "ejs": "~2.5.6",
+    "envfile": "^6.17.0",
+    "express": "^4.17.1",
+    "file-system": "^2.2.2",
+    "fs": "0.0.1-security",
+    "helmet": "^3.21.2",
+    "https": "^1.0.0",
+    "iyzipay": "^2.0.48",
+    "jimp": "^0.22.8",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "mysql": "^2.16.0",
+    "mysql-connection-pool-manager": "^1.5.9",
+    "mysql2": "^2.1.0",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.4.6",
+    "passport": "^0.4.1",
+    "passport-accesstoken": "^0.1.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "pm2": "^4.4.1",
+    "request": "^2.88.2",
+    "sequelize": "^5.21.3",
+    "serve-favicon": "^2.5.0",
+    "serve-static": "^1.15.0",
+    "sharp": "^0.25.2",
+    "uuid": "^9.0.0",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "sqlstring": "^2.3.3"
+  }
+}

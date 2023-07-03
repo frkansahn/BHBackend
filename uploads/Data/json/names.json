@@ -1,0 +1,80 @@
+[
+    {
+        "name": "Ahmet",
+        "gender": "2",
+        "category": "klasik",
+        "mean": "İyiyle kötüyü birbirinden ayırabilen."
+    },
+    {
+        "name": "Ali",
+        "gender": "2",
+        "category": "zarif",
+        "mean": "Ali ismi yüce, yüksek ve ulu anlamını taşımaktadır. Ayrıca Ali dinimizde dört halifeden birisidir. Ali Hz. Muhammedin damadı olarak bilinmektedir."
+    },
+    {
+        "name": "Acem",
+        "gender": "1",
+        "category": "zarif",
+        "mean": "1. Açık ve doğru Arapça konuşamayan kimse 2. İran haklarından birine mensup"
+    },
+    {
+        "name": "Acun",
+        "gender": "2",
+        "category": "havali",
+        "mean": "Dünya, varlık."
+    },
+    {
+        "name": "Acunal",
+        "gender": "2",
+        "category": "zarif",
+        "mean": "Dünya'yı fetheden"
+    },
+    {
+        "name": "Açelya",
+        "gender": "1",
+        "category": "zarif",
+        "mean": "Kokusuz, güzel renkli çiçekler açan bir bitki"
+    },
+    {
+        "name": "Açılay",
+        "gender": "1",
+        "category": "zarif",
+        "mean": "Ayın dolunay haline geçmeye başlaması."
+    },
+    {
+        "name": "Ahenk",
+        "gender": "1",
+        "category": "havali",
+        "mean": "Bilen, bilgili, haberli, uyanık. "
+    },
+    {
+        "name": "Ahter",
+        "gender": "1",
+        "category": "havali",
+        "mean": "Yıldız"
+    },
+    {
+        "name": "Adin",
+        "gender": "2",
+        "category": "kuran",
+        "mean": "Güzel, ince, zarif (kadın)"
+    },
+    {
+        "name": "Adnan",
+        "gender": "2",
+        "category": "havali",
+        "mean": "Aklı selim, akıllı."
+    },
+    {
+        "name": "Affan",
+        "gender": "2",
+        "category": "kuran",
+        "mean": "1. Az beyaz, beyazımsı.2. Kıllarında ve gözlerinde bazen de derisinde doğuştan boya maddesi bulunmadığı için her yanı beyaz olan hayvan veya insan."
+    },
+    {
+        "name": "Afra",
+        "gender": "1",
+        "category": "zarif",
+        "mean": "Türk mitolojisinde iyilik tanrısı"
+    }
+]

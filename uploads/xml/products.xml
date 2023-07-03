@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+    <product>
+        <name>Deneme ürün</name>
+        <barcode>86987545121</barcode>
+        <description>Ürün açıklaması</description>
+        <price>150.2</price>
+    </product>
+    <product>
+        <name>Deneme ürün</name>
+        <barcode>86987545121</barcode>
+        <description>Ürün açıklaması</description>
+        <price>150.2</price>
+    </product>
+</products>

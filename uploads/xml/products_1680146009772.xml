@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><products>
+						<product>
+							<name>Mavi Pantolon</name>
+							<description>null</description>
+							<sku>null</sku>
+							<stock>0</stock>
+							<stockUnit>adet</stockUnit>
+							<barcode>844646115465</barcode>
+							<price>200</price>
+							<vat>18</vat>
+							<property1></property1>
+							<property2></property2>
+							<brand>Adidas</brand>
+							<model>null</model>
+							<category>Giyim</category>
+						</product>
+					
+							<product>
+								<name>Beyaz peynir</name>
+								<description>Beyaz peynir</description>
+								<sku>32524523432</sku>
+								<stock>10</stock>
+								<stockUnit>adet</stockUnit>
+								<barcode>B12343223234</barcode>
+								<price>150.2</price>
+								<vat>8</vat>
+								<property1>Beyaz</property1>
+								<property2>L</property2>
+								<brand>Nike</brand>
+								<model>null</model>
+								<category>Kozmetik</category>
+							</product>
+						
+							<product>
+								<name>Beyaz peynir</name>
+								<description>Beyaz peynir</description>
+								<sku>32524523432</sku>
+								<stock>10</stock>
+								<stockUnit>adet</stockUnit>
+								<barcode>B12343223234</barcode>
+								<price>148</price>
+								<vat>8</vat>
+								<property1>Beyaz</property1>
+								<property2>S</property2>
+								<brand>Nike</brand>
+								<model>null</model>
+								<category>Kozmetik</category>
+							</product>
+						
+							<product>
+								<name>Beyaz peynir</name>
+								<description>Beyaz peynir</description>
+								<sku>32524523432</sku>
+								<stock>10</stock>
+								<stockUnit>adet</stockUnit>
+								<barcode>B12343223234</barcode>
+								<price>146</price>
+								<vat>8</vat>
+								<property1>Beyaz</property1>
+								<property2>M</property2>
+								<brand>Nike</brand>
+								<model>null</model>
+								<category>Kozmetik</category>
+							</product>
+						
+							<product>
+								<name>Beyaz peynir</name>
+								<description>Beyaz peynir</description>
+								<sku>32524523432</sku>
+								<stock>10</stock>
+								<stockUnit>adet</stockUnit>
+								<barcode>B12343223234</barcode>
+								<price>144</price>
+								<vat>8</vat>
+								<property1>Siyah</property1>
+								<property2>L</property2>
+								<brand>Nike</brand>
+								<model>null</model>
+								<category>Kozmetik</category>
+							</product>
+						</products>
