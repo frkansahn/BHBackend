@@ -4,6 +4,8 @@ const passport = require('passport');
 const SqlString = require('sqlstring');
 const { v4: uuidv4 } = require('uuid');
 var publicFunction = require('./public.js');
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 router.get('/sitemap', async function(req, res, next) {
 	var query = 'Select seo_link From blogs WHERE is_deleted = 0 and is_active = 1 LIMIT 50000';
@@ -253,6 +255,12 @@ router.get('/:seo_link', function(req, res, next) {
 			if(results.sections) {
 				results.sections = JSON.parse(results.sections);
 
+				results["articleBody"] = "";
+				results["images"] = [];
+
+				if(results.image)
+					results["images"].push('https://api.bebegimlehayat.com/Data/image/small/' + results.image + '.jpeg');
+
 				for (let index = 0; index < results.sections.length; index++) {
 					let section = results.sections[index];
 
@@ -264,17 +272,46 @@ router.get('/:seo_link', function(req, res, next) {
 							section["product"] = productResult[0];
 						}
 					}
+
+					
+
+					const dom = new JSDOM(section.value);
+
+					let images = dom.window.document.querySelectorAll("img");
+					dom.window.document.querySelectorAll('script').forEach(x => x.remove());
+					
+					if(images) {
+						for (let index = 0; index < images.length; index++) {
+							const element = images[index];
+							if(element.getAttribute("src").indexOf("http") > -1) {
+								results["images"].push(element.getAttribute("src"));
+							}
+							else {
+								results["images"].push('https://bebegimlehayat.com' + element.getAttribute("src"));
+							}
+
+							element.remove();
+						}
+						
+
+						results["articleBody"] += dom.window.document.body.innerHTML.replace(/(<([^>]+)>)/gi, "");
+					}
+					else {
+						results["articleBody"] += dom.window.document.body.innerHTML.replace(/(<([^>]+)>)/gi, "");
+					}
 					
 				}
+
+
 			}
 
-			let otherBlogResult = await publicFunction.mysqlQuery(blogQuery + ` Where b.is_deleted = 0 and b.is_active = 1 and b.seo_link != ${SqlString.escape(seo_link)} and b.blog_category_id = ${SqlString.escape(results.category_id)} LIMIT 10`)
+			let otherBlogResult = await publicFunction.mysqlQuery(blogQuery + ` Where b.is_deleted = 0 and b.is_active = 1 and b.seo_link != ${SqlString.escape(seo_link)} and b.blog_category_id = ${SqlString.escape(results.category_id)} LIMIT 5`)
 
 			if(otherBlogResult && otherBlogResult.result && otherBlogResult.data.length > 0) {
 				results["otherBlogs"] = otherBlogResult.data;
 			}
 			else {
-				let newBlogsResult = await publicFunction.mysqlQuery(`Select b.id , bc.category_name , bc.description as category_description , bc.seo_link as category_seo_link , b.subject , b.description , b.sections , b.short_description , b.image , b.showcase_image , b.createdAt , b.updatedAt , b.created_user_id , b.seo_link , b.seo_title , b.seo_keywords , b.seo_description , b.sort , b.is_active , b.is_container , b.viewed , b.gallery From blogs as b INNER JOIN blog_category as bc ON b.blog_category_id = bc.id WHERE b.seo_link != ${SqlString.escape(seo_link)} and b.is_deleted = 0 and b.is_active = 1 ORDER BY b.createdAt asc;`);
+				let newBlogsResult = await publicFunction.mysqlQuery(`Select b.id , bc.category_name , bc.description as category_description , bc.seo_link as category_seo_link , b.subject , b.description , b.sections , b.short_description , b.image , b.showcase_image , b.createdAt , b.updatedAt , b.created_user_id , b.seo_link , b.seo_title , b.seo_keywords , b.seo_description , b.sort , b.is_active , b.is_container , b.viewed , b.gallery From blogs as b INNER JOIN blog_category as bc ON b.blog_category_id = bc.id WHERE b.seo_link != ${SqlString.escape(seo_link)} and b.is_deleted = 0 and b.is_active = 1 ORDER BY b.createdAt asc LIMIT 5;`);
 				if(newBlogsResult && newBlogsResult.result && newBlogsResult.data.length > 0) {
 					results["otherBlogs"] = newBlogsResult.data;
 				}
