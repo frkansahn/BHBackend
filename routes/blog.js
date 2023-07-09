@@ -323,7 +323,7 @@ router.get('/:seo_link', function(req, res, next) {
 });
 
 router.post('/getAllForAdmin', passport.authenticate('admin-rule', { session: false }) , function(req, res, next) {
-	let start=req.body?.paging?.start || 0, end=req.body?.paging?.end || 20;
+	let start=req.body?.paging?.start || 0, end=req.body?.paging?.end || 20 , filter = req.body?.filter;
 	var query = `
 		Select 
 			b.id , 
@@ -349,11 +349,24 @@ router.post('/getAllForAdmin', passport.authenticate('admin-rule', { session: fa
 			b.is_container , 
 			b.gallery 
 		From blogs as b 
-		INNER JOIN blog_category as bc 
+		LEFT JOIN blog_category as bc 
 		ON b.blog_category_id = bc.id
-		Where b.is_deleted=0 
-		LIMIT ${start},${end}
+		Where b.is_deleted=0
 	`;
+
+	if(filter?.text) {
+		query += ` and (LOWER(b.subject) LIKE LOWER(${SqlString.escape('%' + filter.text + '%')}) or LOWER(b.sections) LIKE LOWER(${SqlString.escape('%'+ filter.text + '%')}))`
+	}
+
+	if(filter?.categories?.length > 0) {
+		query += ` and b.blog_category_id IN (${filter?.categories?.join(',')})`
+	}
+
+	if(filter?.status != null) {
+		query += ` and b.is_active = ${filter?.status}`
+	}
+
+	query += ` LIMIT ${start},${end}`
 
 	var queryTotal = `
 		Select 
@@ -363,6 +376,18 @@ router.post('/getAllForAdmin', passport.authenticate('admin-rule', { session: fa
 		ON b.blog_category_id = bc.id
 		Where b.is_deleted=0
 	`
+
+	if(filter?.text) {
+		queryTotal += ` and (LOWER(b.subject) LIKE LOWER(${SqlString.escape('%' + filter.text + '%')}) or LOWER(b.sections) LIKE LOWER(${SqlString.escape('%'+ filter.text + '%')}))`
+	}
+
+	if(filter?.categories?.length > 0) {
+		queryTotal += ` and b.blog_category_id IN (${filter?.categories?.join(',')})`
+	}
+
+	if(filter?.status != null) {
+		queryTotal += ` and b.is_active = ${filter?.status}`
+	}
 
 	connection.query(query , function (results, error, fields) {
 		if(error){
