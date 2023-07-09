@@ -305,7 +305,7 @@ router.get('/:seo_link', function(req, res, next) {
 
 			}
 
-			let otherBlogResult = await publicFunction.mysqlQuery(blogQuery + ` Where b.is_deleted = 0 and b.is_active = 1 and b.seo_link != ${SqlString.escape(seo_link)} and b.blog_category_id = ${SqlString.escape(results.category_id)} LIMIT 5`)
+			let otherBlogResult = await publicFunction.mysqlQuery(blogQuery + ` Where b.is_deleted = 0 and b.is_active = 1 and b.seo_link != ${SqlString.escape(seo_link)} and b.blog_category_id = ${SqlString.escape(results.category_id)} ORDER BY RAND() LIMIT 5`)
 
 			if(otherBlogResult && otherBlogResult.result && otherBlogResult.data.length > 0) {
 				results["otherBlogs"] = otherBlogResult.data;
