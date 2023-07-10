@@ -7,17 +7,21 @@ var http = require('http');
 var cors = require('cors');
 require('dotenv').config({ path: __dirname + '/.env' });
 const fs = require('fs');
+const elFinder = require('elfinder-node');
 
 var app = express();
-// app.use(cors({
-//   origin: ["https://www.geffas.com" , "http://localhost:3000"],
-//   credentials:true,
-//   optionSuccessStatus:200
-// }));
+
+const uploadsDir = path.resolve(__dirname, './uploads/Data');
+const roots = [
+  {
+    driver: elFinder.LocalFileStorage,
+    URL: '/Data/', //Required
+    path: uploadsDir, //Required
+    permissions: { read: 1, write: 1, lock: 0 },
+  }
+];
 
 
-
-var whitelist = ["https://www.front.geffasticaret.com" , "https://front.geffasticaret.com" , "http://front.geffasticaret.com" , "front.geffasticaret.com" , "http://localhost:3000"]
 var corsOptions = {
   origin: "*",
   credentials:true,
@@ -33,6 +37,11 @@ app.use(bodyParser.json({limit: '50mb', type: 'application/json'}));
 app.use(bodyParser.urlencoded({ parameterLimit: 100000,limit: '50mb',extended: true }));
 app.use(cookieParser());
 app.use('/Data' , express.static(path.join(__dirname, 'uploads/Data')));
+app.use('/connector', elFinder(roots));
+
+app.get('/elfinder', function (req, res) {
+    res.sendFile(path.resolve(__dirname, './elfinder.html'));
+});
 
 const mySql = {
   host: process.env.DATABASE_HOST,
