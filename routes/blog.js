@@ -322,6 +322,41 @@ router.get('/:seo_link', function(req, res, next) {
   	});
 });
 
+router.get('/noSection/:seo_link', function(req, res, next) {
+	let seo_link = req.params.seo_link;
+	let blogQuery = 'Select b.id , bc.id as category_id , bc.category_name , bc.description as category_description , bc.seo_link as category_seo_link  , b.subject , b.description , b.short_description , b.image , b.showcase_image , b.createdAt , b.updatedAt , b.created_user_id , b.seo_link , b.seo_title , b.seo_keywords , b.seo_description , b.sort , b.is_active , b.is_container , b.gallery From `blogs` as b INNER JOIN `blog_category` as bc ON b.blog_category_id = bc.id';
+	var query = blogQuery + ' WHERE b.is_deleted = 0 and b.is_active=1 and b.seo_link='+SqlString.escape(seo_link);
+	connection.query(query , async function (results, error, fields) {
+		if(error){
+			res.send({"status": 500, "error": error, "response": null}); 
+	  	} else {
+			if(results && results.length > 0) {
+				results = results[0];
+			}
+			results["articleBody"] = "";
+			results["images"] = [];
+
+			if(results.image)
+				results["images"].push('https://api.bebegimlehayat.com/Data/image/small/' + results.image + '.jpeg');
+
+			
+			let otherBlogResult = await publicFunction.mysqlQuery(blogQuery + ` Where b.is_deleted = 0 and b.is_active = 1 and b.seo_link != ${SqlString.escape(seo_link)} and b.blog_category_id = ${SqlString.escape(results.category_id)} ORDER BY RAND() LIMIT 5`)
+
+			if(otherBlogResult && otherBlogResult.result && otherBlogResult.data.length > 0) {
+				results["otherBlogs"] = otherBlogResult.data;
+			}
+			else {
+				let newBlogsResult = await publicFunction.mysqlQuery(`Select b.id , bc.category_name , bc.description as category_description , bc.seo_link as category_seo_link , b.subject , b.description , b.sections , b.short_description , b.image , b.showcase_image , b.createdAt , b.updatedAt , b.created_user_id , b.seo_link , b.seo_title , b.seo_keywords , b.seo_description , b.sort , b.is_active , b.is_container , b.viewed , b.gallery From blogs as b INNER JOIN blog_category as bc ON b.blog_category_id = bc.id WHERE b.seo_link != ${SqlString.escape(seo_link)} and b.is_deleted = 0 and b.is_active = 1 ORDER BY b.createdAt asc LIMIT 5;`);
+				if(newBlogsResult && newBlogsResult.result && newBlogsResult.data.length > 0) {
+					results["otherBlogs"] = newBlogsResult.data;
+				}
+			}
+
+	  		res.send({"status": 200, "success": "success","Fields":fields, "response": results , "otherBlogResult":otherBlogResult});
+  		}
+  	});
+});
+
 router.post('/getAllForAdmin', passport.authenticate('admin-rule', { session: false }) , function(req, res, next) {
 	let start=req.body?.paging?.start || 0, end=req.body?.paging?.end || 20 , filter = req.body?.filter;
 	var query = `
@@ -484,7 +519,6 @@ router.post('/add' , passport.authenticate('admin-rule', { session: false }) ,as
 		} 
 		else
 		{
-			publicFunction.sitemapGenerator();
 			res.send({ success: "success", response: results, message: 'blog added.'});
 		}	
 	});
@@ -527,7 +561,6 @@ router.post('/update/:id', passport.authenticate('admin-rule', { session: false 
 			res.send({"status":500 , "error": error , "response": "blog no update."});
 		}
 		else{
-			publicFunction.sitemapGenerator();
 			res.send({"status":200 , "success": "success" , "Ürün" : results, "Fields": fields0, "response": "blog updated."});
 		}
 	});
@@ -582,6 +615,69 @@ router.post('/controlLink/:seo_link' , passport.authenticate('admin-rule', { ses
 		res.send({status:200, use: true, message: 'Link can use.'});
 	else
 		res.send({status:401, use: false, message: 'Link can not use.'});
+});
+
+router.post('/addBabyName' , passport.authenticate('admin-rule', { session: false }) ,async function(req , res , next){
+	var name = req.body;
+
+	var query = "INSERT INTO `baby_names`(`name`,`description`,`gender`,`letter`) VALUES("+SqlString.escape(name.name)+","+SqlString.escape(name.description)+","+SqlString.escape(name.gender)+","+SqlString.escape(name.letter)+")";
+	connection.query(query, function(results, error, fields){
+		if(error)
+		{
+			res.send({ success: "unsuccess",error: error, message: 'name no added.' });
+		} 
+		else
+		{
+			res.send({ success: "success", response: results, message: 'name added.'});
+		}	
+	});
+});
+
+router.post('/updateBabyName', passport.authenticate('admin-rule', { session: false }) , async function(req , res , next){
+	var name  = req.body;
+
+	var query = "Update `baby_names` Set name="+SqlString.escape(name.name)+" , description="+SqlString.escape(name.description)+", gender="+SqlString.escape(name.gender)+" , letter="+SqlString.escape(name.letter)+" Where id=" + name.id;
+	connection.query(query , function(results, error, fields0){
+		if(error){
+			res.send({"status":500 , "error": error , "response": "name no update."});
+		}
+		else{
+			res.send({"status":200 , "success": "success" , "Ürün" : results, "Fields": fields0, "response": "name updated."});
+		}
+	});
+});
+
+router.get('/deleteBabyName/:id', passport.authenticate('admin-rule', { session: false }) , async function(req , res , next){
+	var id  = req.params.id;
+
+	var query = "Delete From baby_names Where id=" + id;
+	connection.query(query , function(results, error, fields0){
+		if(error){
+			res.send({"status":500 , "error": error , "response": "name no delete."});
+		}
+		else{
+			res.send({"status":200 , "success": "success" , "Ürün" : results, "Fields": fields0, "response": "name deleted."});
+		}
+	});
+});
+
+router.post('/getBabyName', async function(req , res , next){
+	var name  = req.body;
+
+	var query = `Select * From baby_names Where letter = ${SqlString.escape(name.letter)}`;
+	if(name.gender != null && name.gender != undefined) {
+		query += ` and gender = ${name.gender} `
+	}
+
+	query += ` Order By name desc` 
+	connection.query(query , function(results, error, fields0){
+		if(error){
+			res.send({"status":500 , "error": error , "response": "no name."});
+		}
+		else{
+			res.send({"status":200 , "success": "success" , "response": results});
+		}
+	});
 });
 
 module.exports = router;
