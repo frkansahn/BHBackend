@@ -88,6 +88,7 @@ var search = require('./routes/search');
 var site_content_data = require('./routes/site_content_data');
 var cities = require('./routes/cities');
 var page = require('./routes/page');
+var names = require('./routes/names');
 
 app.use('/api/v1/product', product);
 app.use('/api/v1/attribute', attribute);
@@ -113,6 +114,7 @@ app.use('/api/v1/search', search);
 app.use('/api/v1/site_content_data', site_content_data);
 app.use('/api/v1/city', cities);
 app.use('/api/v1/page', page);
+app.use('/api/v1/names', names);
 
 app.all('*', function (req, res, next) {
   console.log('req start: ', req.secure, req.hostname, req.url, app.get('port'));
