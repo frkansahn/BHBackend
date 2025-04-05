@@ -92,9 +92,11 @@ router.post('/uploadMultiple',  passport.authenticate('admin-rule', { session: f
 router.post('/upload', passport.authenticate('admin-rule', { session: false }), uploadProductImages.array('file', 100), async function (req, res, next) {
     try {
         let filename, quality = req.query.quality || 90;
+        fs.mkdir(IMAGE_PATH + '/image/extra_big', (err) => { });
         fs.mkdir(IMAGE_PATH + '/image/big', (err) => { });
         fs.mkdir(IMAGE_PATH + '/image/medium', (err) => { });
         fs.mkdir(IMAGE_PATH + '/image/small', (err) => { });
+        fs.mkdir(IMAGE_PATH + '/image/extra_small', (err) => { });
         await Promise.all(
             req.files.map(async file => {
                 filename = file.originalname.replace(/\ ..+$/, "") + `-${Date.now()}`;
@@ -159,25 +161,6 @@ router.post('/upload', passport.authenticate('admin-rule', { session: false }), 
                     .toFormat("webp")
                     .webp({ quality: quality })
                     .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.webp`);
-                    
-
-                // await Jimp.read(file.buffer)
-                // .then(async image => {
-                //     await image.resize(1600,Jimp.AUTO)
-                //     .quality(90)
-                //     .write(`${IMAGE_PATH}/image/big/${filename}.jpeg`);
-
-                //     await image.resize(900,Jimp.AUTO)
-                //     .quality(90)
-                //     .write(`${IMAGE_PATH}/image/medium/${filename}.jpeg`);
-
-                //     await image.resize(400,Jimp.AUTO)
-                //     .quality(90)
-                //     .write(`${IMAGE_PATH}/image/small/${filename}.jpeg`);
-                // })
-                // .catch(err => {
-                //     console.log(err);
-                // });
             })
         );
         res.send({ location: filename });

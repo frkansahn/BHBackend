@@ -29,6 +29,8 @@ router.get('/getBlogCategoriesForAdmin', passport.authenticate('admin-rule', { s
 			b_c.is_active,
 			b_c.is_menu,
 			b_c.is_baby_dictionary,
+			b_c.is_medicine,
+			b_c.is_name,
 			b_c.type,
 			b_c.seo_link as url,
 			b_c.seo_title,
@@ -139,6 +141,8 @@ router.get('/getBlogCategoryBySeoLink/:seo_link' , function(req, res, next) {
 			b_c.seo_title,
 			b_c.seo_keywords,
 			b_c.seo_description,
+			b_c.is_medicine,
+			b_c.is_name,
 			(
 				SELECT 
 					JSON_ARRAYAGG(
@@ -200,13 +204,18 @@ router.post('/add', passport.authenticate('admin-rule', { session: false }) , as
 		category.seo_link = category.seo_link + "-" + uuidv4();
 	}
 
+	let medicineByseoLink = await publicFunction.mysqlQuery("Select * From `medicines` Where is_deleted = 0 and seo_link = " + SqlString.escape(category.seo_link));
+	if(medicineByseoLink && medicineByseoLink.data.length > 0) {
+		category.seo_link = category.seo_link + "-" + uuidv4();
+	}
+
 	let contentByseoLink = await publicFunction.mysqlQuery("Select * From `contents` Where seo_link = " + SqlString.escape(category.seo_link));
 	if(contentByseoLink && contentByseoLink.data.length > 0) {
 		category.seo_link = category.seo_link + "-" + uuidv4();
 	}
 
 	if(category) {
-		var query = "Insert into `blog_category`(`parent_id`,`category_name`,`description`,`type`,`is_active`,`sort`,`image`,`is_menu`,`seo_link`,`seo_title`,`seo_keywords`,`seo_description`,`created_user_id`) Values("+SqlString.escape(category.parent_id)+","+SqlString.escape(category.category_name)+","+SqlString.escape(category.description)+","+SqlString.escape(category.type)+","+SqlString.escape(category.is_active)+","+SqlString.escape(category.sort)+","+SqlString.escape(category.image)+","+SqlString.escape(category.is_menu)+","+SqlString.escape(category.seo_link)+","+SqlString.escape(category.seo_title)+","+SqlString.escape(category.seo_keywords)+","+SqlString.escape(category.seo_description)+","+SqlString.escape(user.id)+")";
+		var query = "Insert into `blog_category`(`parent_id`,`category_name`,`description`,`type`,`is_active`,`sort`,`image`,`is_menu`,`seo_link`,`seo_title`,`seo_keywords`,`seo_description`,`created_user_id`,`is_medicine`,`is_name`) Values("+SqlString.escape(category.parent_id)+","+SqlString.escape(category.category_name)+","+SqlString.escape(category.description)+","+SqlString.escape(category.type)+","+SqlString.escape(category.is_active)+","+SqlString.escape(category.sort)+","+SqlString.escape(category.image)+","+SqlString.escape(category.is_menu)+","+SqlString.escape(category.seo_link)+","+SqlString.escape(category.seo_title)+","+SqlString.escape(category.seo_keywords)+","+SqlString.escape(category.seo_description)+","+SqlString.escape(user.id)+","+SqlString.escape(category.is_medicine)+","+SqlString.escape(category.is_name)+")";
 		
 		connection.query(query, function(results, error, fields){
 			if(error)
@@ -270,6 +279,11 @@ router.post('/update/',passport.authenticate('admin-rule', { session: false }),a
 					category.seo_link = category.seo_link + "-" + uuidv4();
 				}
 
+				let medicineByseoLink = await publicFunction.mysqlQuery("Select * From `medicines` Where is_deleted = 0 and seo_link = " + SqlString.escape(category.seo_link));
+				if(medicineByseoLink && medicineByseoLink.data && medicineByseoLink.data.length > 0) {
+					category.seo_link = category.seo_link + "-" + uuidv4();
+				}
+
 				let contentByseoLink = await publicFunction.mysqlQuery("Select * From `contents` Where seo_link = " + SqlString.escape(category.seo_link));
 				if(contentByseoLink && contentByseoLink.data.length > 0) {
 					category.seo_link = category.seo_link + "-" + uuidv4();
@@ -277,7 +291,7 @@ router.post('/update/',passport.authenticate('admin-rule', { session: false }),a
 			}
 		}		
 
-		var query = "Update `blog_category` Set parent_id="+ SqlString.escape(category.parent_id) +", category_name="+SqlString.escape(category.category_name)+", description="+SqlString.escape(category.description)+" , seo_link = " + SqlString.escape(category.seo_link) +" , seo_title="+SqlString.escape(category.seo_title)+" , seo_keywords="+SqlString.escape(category.seo_keywords)+" , seo_description="+SqlString.escape(category.seo_description)+",type="+SqlString.escape(category.type)+",is_menu="+SqlString.escape(category.is_menu)+",baby_dictionary_title="+SqlString.escape(category.baby_dictionary_title)+",baby_dictionary_description="+SqlString.escape(category.baby_dictionary_description)+",image="+SqlString.escape(category.image)+",sort="+SqlString.escape(category.sort)+",is_active="+SqlString.escape(category.is_active)+", updated_user_id="+SqlString.escape(user.id)+" Where id=" + category.id;
+		var query = "Update `blog_category` Set parent_id="+ SqlString.escape(category.parent_id) +", category_name="+SqlString.escape(category.category_name)+", description="+SqlString.escape(category.description)+" , seo_link = " + SqlString.escape(category.seo_link) +" , seo_title="+SqlString.escape(category.seo_title)+" , seo_keywords="+SqlString.escape(category.seo_keywords)+" , seo_description="+SqlString.escape(category.seo_description)+",type="+SqlString.escape(category.type)+",is_menu="+SqlString.escape(category.is_menu)+",baby_dictionary_title="+SqlString.escape(category.baby_dictionary_title)+",baby_dictionary_description="+SqlString.escape(category.baby_dictionary_description)+",image="+SqlString.escape(category.image)+",sort="+SqlString.escape(category.sort)+",is_active="+SqlString.escape(category.is_active)+",is_medicine="+SqlString.escape(category.is_medicine)+",is_name="+SqlString.escape(category.is_name)+", updated_user_id="+SqlString.escape(user.id)+" Where id=" + category.id;
 		connection.query(query , function(results, error, fields0){
 			if(error){
 				res.send({"status":500 , "error": error.sqlMessage , "response": "Category no updated."});
@@ -349,6 +363,11 @@ router.post('/controlLink/:seo_link' , passport.authenticate('admin-rule', { ses
 
 	let nameByseoLink = await publicFunction.mysqlQuery(`Select * From names Where is_deleted = 0 and seo_link = ${SqlString.escape(seo_link)}`);
 	if(nameByseoLink && nameByseoLink.data && nameByseoLink.data.length > 0) {
+		is_available = false;
+	}
+
+	let medicineByseoLink = await publicFunction.mysqlQuery(`Select * From medicines Where is_deleted = 0 and seo_link = ${SqlString.escape(seo_link)}`);
+	if(medicineByseoLink && medicineByseoLink.data && medicineByseoLink.data.length > 0) {
 		is_available = false;
 	}
 

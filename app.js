@@ -21,14 +21,7 @@ const roots = [
   }
 ];
 
-
-var corsOptions = {
-  origin: "*",
-  credentials:true,
-  optionSuccessStatus:200
-}
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -89,6 +82,7 @@ var site_content_data = require('./routes/site_content_data');
 var cities = require('./routes/cities');
 var page = require('./routes/page');
 var names = require('./routes/names');
+var medicines = require('./routes/medicines');
 
 app.use('/api/v1/product', product);
 app.use('/api/v1/attribute', attribute);
@@ -115,6 +109,7 @@ app.use('/api/v1/site_content_data', site_content_data);
 app.use('/api/v1/city', cities);
 app.use('/api/v1/page', page);
 app.use('/api/v1/names', names);
+app.use('/api/v1/medicines', medicines);
 
 app.all('*', function (req, res, next) {
   console.log('req start: ', req.secure, req.hostname, req.url, app.get('port'));

@@ -8,7 +8,7 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
 router.get('/sitemap', async function(req, res, next) {
-	var query = 'Select seo_link From blogs WHERE is_deleted = 0 and is_active = 1 LIMIT 50000';
+	var query = 'Select seo_link,updatedAt,createdAt From blogs WHERE is_deleted = 0 and is_active = 1 LIMIT 50000';
 	connection.query(query, function (results, error, fields) {
 		if(error){
 			res.send({"status": 500, "error": error, "response": null}); 
@@ -20,7 +20,7 @@ router.get('/sitemap', async function(req, res, next) {
 });
 
 router.get('/category/sitemap', async function(req, res, next) {
-	var query = 'Select seo_link From blog_category WHERE is_deleted = 0 and is_active = 1 LIMIT 50000';
+	var query = 'Select seo_link,updatedAt,createdAt From blog_category WHERE is_deleted = 0 and is_active = 1 LIMIT 50000';
 	connection.query(query, function (results, error, fields) {
 		if(error){
 			res.send({"status": 500, "error": error, "response": null}); 
@@ -122,41 +122,187 @@ router.get('/active_all_by_category/:seo_link', function(req, res, next) {
 });
 
 router.post('/get_blogs_by_category', async function(req, res, next) {
-	var query,seo_link = req.body.seo_link, start = req.body.paging.start || 0, end = req.body.paging.end || 10 , sort = req.body.sort || 'new';
+	var query,queryTotal,seo_link = req.body.seo_link,letter = req.body.letter, start = req.body.paging.start || 0, end = req.body.paging.end || 10 , sort = req.body.sort || 'new';
 
-	query = `
-		Select 
-			b.id , 
-			(SELECT category_name From blog_category Where id = b.blog_category_id) as category_name,
-			(SELECT description From blog_category Where id = b.blog_category_id) as description,
-			(SELECT seo_link From blog_category Where id = b.blog_category_id) as category_seo_link,
-			b.subject , 
-			b.description , 
-			b.sections , 
-			b.short_description , 
-			b.image , 
-			b.showcase_image , 
-			b.createdAt , 
-			b.updatedAt , 
-			b.created_user_id , 
-			b.seo_link , 
-			b.seo_title , 
-			b.seo_keywords , 
-			b.seo_description , 
-			b.sort , 
-			b.is_container , 
-			b.gallery 
-		From blogs as b 
-		WHERE b.is_deleted = 0 and b.is_active = 1 and b.blog_category_id IN(
-			Select DISTINCT id 
-			From blog_category as b_c 
-			Where (
-				CASE WHEN (
-					Select parent_id 
-					From blog_category 
-					Where seo_link = ${SqlString.escape(seo_link)}
-				) IS NULL 
-				THEN 
+	let categoryResult = await publicFunction.mysqlQuery(`Select * From blog_category Where seo_link = ${SqlString.escape(seo_link)}`);
+	if(categoryResult && categoryResult.data && categoryResult.data.length > 0) {
+		categoryResult = categoryResult.data[0];
+	}
+
+	if(categoryResult.is_medicine) {
+		query = `
+			Select 
+				m.id , 
+				(SELECT category_name From blog_category Where id = m.category_id) as category_name,
+				(SELECT description From blog_category Where id = m.category_id) as description,
+				(SELECT seo_link From blog_category Where id = m.category_id) as category_seo_link,
+				m.name as subject,
+				m.seo_link, 
+				m.image
+			From medicines as m 
+			WHERE m.is_deleted = 0 and m.is_active = 1 and m.category_id IN(
+				Select DISTINCT id 
+				From blog_category as b_c 
+				Where (
+					CASE WHEN (
+						Select parent_id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) IS NULL 
+					THEN 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						) 
+						or 
+						b_c.parent_id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						) 
+					ELSE 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						)
+					END
+				) 
+			)
+		`;
+
+		if(letter) {
+			query += " and LOWER(m.name) LIKE LOWER('"+letter+"%')"
+		}
+	}
+	else if(categoryResult.is_name) {
+		query = `
+			Select 
+				n.id , 
+				(SELECT category_name From blog_category Where id = n.category_id) as category_name,
+				(SELECT description From blog_category Where id = n.category_id) as description,
+				(SELECT seo_link From blog_category Where id = n.category_id) as category_seo_link,
+				n.name as subject,
+				n.seo_link
+			From names as n 
+			WHERE n.is_deleted = 0 and n.is_active = 1 and n.category_id IN(
+				Select DISTINCT id 
+				From blog_category as b_c 
+				Where (
+					CASE WHEN (
+						Select parent_id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) IS NULL 
+					THEN 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						) 
+						or 
+						b_c.parent_id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						) 
+					ELSE 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						)
+					END
+				) 
+			)
+		`;
+
+		if(letter) {
+			query += " and LOWER(n.name) LIKE LOWER('"+letter+"%')"
+		}
+	}
+	else {
+		query = `
+			Select 
+				b.id , 
+				(SELECT category_name From blog_category Where id = b.blog_category_id) as category_name,
+				(SELECT description From blog_category Where id = b.blog_category_id) as description,
+				(SELECT seo_link From blog_category Where id = b.blog_category_id) as category_seo_link,
+				b.subject , 
+				b.description , 
+				b.sections , 
+				b.short_description , 
+				b.image , 
+				b.showcase_image , 
+				b.createdAt , 
+				b.updatedAt , 
+				b.created_user_id , 
+				b.seo_link , 
+				b.seo_title , 
+				b.seo_keywords , 
+				b.seo_description , 
+				b.sort , 
+				b.is_container , 
+				b.gallery 
+			From blogs as b 
+			WHERE b.is_deleted = 0 and b.is_active = 1 and b.blog_category_id IN(
+				Select DISTINCT id 
+				From blog_category as b_c 
+				Where (
+					CASE WHEN (
+						Select parent_id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) IS NULL 
+					THEN 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						) 
+						or 
+						b_c.parent_id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						) 
+					ELSE 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						)
+					END
+				) 
+			)
+		`;
+
+		if(sort == 'new')
+			query += ` ORDER BY b.createdAt desc `;
+		else if(sort == 'popular')
+			query += ` ORDER BY b.viewed desc `;
+	}
+
+	
+
+	query += ` LIMIT ${start},${end} `;
+
+	if(categoryResult.is_medicine) {
+		queryTotal = `
+			Select 
+				COUNT(DISTINCT m.id) as total 
+			From medicines as m 
+			WHERE m.is_deleted = 0 and m.is_active = 1 and m.category_id IN(
+				Select DISTINCT id 
+				From blog_category as b_c 
+				Where (
+					CASE WHEN (
+						Select parent_id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) IS NULL 
+					THEN 
 					b_c.id = (
 						Select id 
 						From blog_category 
@@ -168,59 +314,91 @@ router.post('/get_blogs_by_category', async function(req, res, next) {
 						From blog_category 
 						Where seo_link = ${SqlString.escape(seo_link)}
 					) 
-				ELSE 
+					ELSE 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						)
+					END
+				) 
+			)
+		`
+	}
+	else if(categoryResult.is_name) {
+		queryTotal = `
+			Select 
+				COUNT(DISTINCT n.id) as total 
+			From names as n 
+			WHERE n.is_deleted = 0 and n.is_active = 1 and n.category_id IN(
+				Select DISTINCT id 
+				From blog_category as b_c 
+				Where (
+					CASE WHEN (
+						Select parent_id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) IS NULL 
+					THEN 
 					b_c.id = (
 						Select id 
 						From blog_category 
 						Where seo_link = ${SqlString.escape(seo_link)}
-					)
-				END
-			) 
-		)
-	`;
-
-	if(sort == 'new')
-		query += ` ORDER BY b.createdAt desc `;
-	else if(sort == 'popular')
-		query += ` ORDER BY b.viewed desc `;
-
-	query += ` LIMIT ${start},${end} `;
-
-	var queryTotal = `
-		Select 
-			COUNT(DISTINCT b.id) as total 
-		From blogs as b 
-		WHERE b.is_deleted = 0 and b.is_active = 1 and b.blog_category_id IN(
-			Select DISTINCT id 
-			From blog_category as b_c 
-			Where (
-				CASE WHEN (
-					Select parent_id 
-					From blog_category 
-					Where seo_link = ${SqlString.escape(seo_link)}
-				) IS NULL 
-				THEN 
-				b_c.id = (
-					Select id 
-					From blog_category 
-					Where seo_link = ${SqlString.escape(seo_link)}
+					) 
+					or 
+					b_c.parent_id = (
+						Select id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) 
+					ELSE 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						)
+					END
 				) 
-				or 
-				b_c.parent_id = (
-					Select id 
-					From blog_category 
-					Where seo_link = ${SqlString.escape(seo_link)}
-				) 
-				ELSE 
+			)
+		`
+	}
+	else {
+		queryTotal = `
+			Select 
+				COUNT(DISTINCT b.id) as total 
+			From blogs as b 
+			WHERE b.is_deleted = 0 and b.is_active = 1 and b.blog_category_id IN(
+				Select DISTINCT id 
+				From blog_category as b_c 
+				Where (
+					CASE WHEN (
+						Select parent_id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) IS NULL 
+					THEN 
 					b_c.id = (
 						Select id 
 						From blog_category 
 						Where seo_link = ${SqlString.escape(seo_link)}
-					)
-				END
-			) 
-		)
-	`
+					) 
+					or 
+					b_c.parent_id = (
+						Select id 
+						From blog_category 
+						Where seo_link = ${SqlString.escape(seo_link)}
+					) 
+					ELSE 
+						b_c.id = (
+							Select id 
+							From blog_category 
+							Where seo_link = ${SqlString.escape(seo_link)}
+						)
+					END
+				) 
+			)
+		`
+	}
 	
 	connection.query(query, function (results, error, fields) {
 		if(error){
@@ -511,6 +689,11 @@ router.post('/add' , passport.authenticate('admin-rule', { session: false }) ,as
 		blog.seo_link = blog.seo_link + "-" + uuidv4();
 	}
 
+	let medicineByseoLink = await publicFunction.mysqlQuery("Select * From `medicines` Where is_deleted = 0 and seo_link = " + SqlString.escape(blog.seo_link));
+	if(medicineByseoLink && medicineByseoLink.data.length > 0) {
+		blog.seo_link = blog.seo_link + "-" + uuidv4();
+	}
+
 	let contentByseoLink = await publicFunction.mysqlQuery("Select * From `contents` Where seo_link = " + SqlString.escape(blog.seo_link));
 	if(contentByseoLink && contentByseoLink.data.length > 0) {
 		blog.seo_link = blog.seo_link + "-" + uuidv4();
@@ -557,6 +740,11 @@ router.post('/update/:id', passport.authenticate('admin-rule', { session: false 
 
 	let nameBySeoLink = await publicFunction.mysqlQuery(`Select * From names Where is_deleted = 0 and seo_link = ${SqlString.escape(blog.seo_link)}`);
 	if(nameBySeoLink && nameBySeoLink.data && nameBySeoLink.data.length > 0) {
+		blog.seo_link = blog.seo_link + "-" + uuidv4();
+	}
+
+	let medicineBySeoLink = await publicFunction.mysqlQuery(`Select * From medicines Where is_deleted = 0 and seo_link = ${SqlString.escape(blog.seo_link)}`);
+	if(medicineBySeoLink && medicineBySeoLink.data && medicineBySeoLink.data.length > 0) {
 		blog.seo_link = blog.seo_link + "-" + uuidv4();
 	}
 
@@ -621,6 +809,11 @@ router.post('/controlLink/:seo_link' , passport.authenticate('admin-rule', { ses
 		is_available = false;
 	}
 
+	let medicineByseoLink = await publicFunction.mysqlQuery(`Select * From medicines Where is_deleted = 0 and seo_link = ${SqlString.escape(seo_link)}`);
+	if(medicineByseoLink && medicineByseoLink.data && medicineByseoLink.data.length > 0) {
+		is_available = false;
+	}
+
 	let contentByseoLink = await publicFunction.mysqlQuery(`Select * From contents Where seo_link = ${SqlString.escape(seo_link)}`);
 	if(contentByseoLink && contentByseoLink.data && contentByseoLink.data.length > 0) {
 		is_available = false;
@@ -681,7 +874,7 @@ router.post('/getBabyName', async function(req , res , next){
 
 	var query = `Select * From baby_names Where letter = ${SqlString.escape(name.letter)}`;
 	if(name.gender != null && name.gender != undefined) {
-		query += ` and gender = ${name.gender} `
+		query += ` and (gender = ${name.gender} or gender = 2)`
 	}
 
 	query += ` Order By name desc` 
