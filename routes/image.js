@@ -93,10 +93,10 @@ router.post('/upload', passport.authenticate('admin-rule', { session: false }), 
     try {
         let filename, quality = req.query.quality || 90;
         fs.mkdir(IMAGE_PATH + '/image/extra_big', (err) => { });
-        fs.mkdir(IMAGE_PATH + '/image/big', (err) => { });
-        fs.mkdir(IMAGE_PATH + '/image/medium', (err) => { });
-        fs.mkdir(IMAGE_PATH + '/image/small', (err) => { });
-        fs.mkdir(IMAGE_PATH + '/image/extra_small', (err) => { });
+        // fs.mkdir(IMAGE_PATH + '/image/big', (err) => { });
+        // fs.mkdir(IMAGE_PATH + '/image/medium', (err) => { });
+        // fs.mkdir(IMAGE_PATH + '/image/small', (err) => { });
+        // fs.mkdir(IMAGE_PATH + '/image/extra_small', (err) => { });
         await Promise.all(
             req.files.map(async file => {
                 filename = file.originalname.replace(/\ ..+$/, "") + `-${Date.now()}`;
@@ -114,53 +114,53 @@ router.post('/upload', passport.authenticate('admin-rule', { session: false }), 
                     .webp({ quality: quality })
                     .toFile(`${IMAGE_PATH}/image/extra_big/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(1600)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/big/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(1600)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/big/${filename}.jpeg`);
 
-                await sharp(file.buffer)
-                    .resize(1600)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/big/${filename}.webp`);
+                // await sharp(file.buffer)
+                //     .resize(1600)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/big/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(900)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/medium/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(900)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/medium/${filename}.jpeg`);
 
-                await sharp(file.buffer)
-                    .resize(900)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/medium/${filename}.webp`);
+                // await sharp(file.buffer)
+                //     .resize(900)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/medium/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(400)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/small/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(400)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/small/${filename}.jpeg`);
 
-                await sharp(file.buffer)
-                    .resize(400)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/small/${filename}.webp`);
+                // await sharp(file.buffer)
+                //     .resize(400)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/small/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(100)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(100)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.jpeg`);
 
-                await sharp(file.buffer)
-                    .resize(100)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.webp`);
+                // await sharp(file.buffer)
+                //     .resize(100)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.webp`);
             })
         );
         res.send({ location: filename });
@@ -184,29 +184,29 @@ router.post('/uploads',  passport.authenticate('admin-rule', { session: false })
                     .jpeg({ quality: quality })
                     .toFile(`${IMAGE_PATH}/image/extra_big/${filename}.jpeg`);   
 
-                await sharp(file.buffer)
-                    .resize(1600)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/big/${filename}.jpeg`);                
+                // await sharp(file.buffer)
+                //     .resize(1600)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/big/${filename}.jpeg`);                
 
-                await sharp(file.buffer)
-                    .resize(900)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/medium/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(900)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/medium/${filename}.jpeg`);
 
-                await sharp(file.buffer)
-                    .resize(400)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/small/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(400)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/small/${filename}.jpeg`);
 
-                await sharp(file.buffer)
-                    .resize(100)
-                    .toFormat("jpeg")
-                    .jpeg({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.jpeg`);
+                // await sharp(file.buffer)
+                //     .resize(100)
+                //     .toFormat("jpeg")
+                //     .jpeg({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.jpeg`);
 
                 await sharp(file.buffer)
                     .resize(1920)
@@ -214,30 +214,30 @@ router.post('/uploads',  passport.authenticate('admin-rule', { session: false })
                     .webp({ quality: quality })
                     .toFile(`${IMAGE_PATH}/image/extra_big/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(1600)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/big/${filename}.webp`);
+                // await sharp(file.buffer)
+                //     .resize(1600)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/big/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(900)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/medium/${filename}.webp`);
+                // await sharp(file.buffer)
+                //     .resize(900)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/medium/${filename}.webp`);
 
-                await sharp(file.buffer)
-                    .resize(400)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/small/${filename}.webp`);  
+                // await sharp(file.buffer)
+                //     .resize(400)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/small/${filename}.webp`);  
                     
                     
-                await sharp(file.buffer)
-                    .resize(100)
-                    .toFormat("webp")
-                    .webp({ quality: quality })
-                    .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.webp`);  
+                // await sharp(file.buffer)
+                //     .resize(100)
+                //     .toFormat("webp")
+                //     .webp({ quality: quality })
+                //     .toFile(`${IMAGE_PATH}/image/extra_small/${filename}.webp`);  
 
 
                 await snooze(3000);
@@ -254,14 +254,14 @@ router.post('/removeFile', passport.authenticate('admin-rule', { session: false 
     var fileName = req.body.filename;
     (async () => {
         try {
-            await fs.unlinkSync(IMAGE_PATH + "/image/big/" + fileName + '.jpeg');
-            await fs.unlinkSync(IMAGE_PATH + "/image/medium/" + fileName + '.jpeg');
-            await fs.unlinkSync(IMAGE_PATH + "/image/small/" + fileName + '.jpeg');
-            await fs.unlinkSync(IMAGE_PATH + "/image/extra_small/" + fileName + '.jpeg');
-            await fs.unlinkSync(IMAGE_PATH + "/image/big/" + fileName + '.webp');
-            await fs.unlinkSync(IMAGE_PATH + "/image/medium/" + fileName + '.webp');
-            await fs.unlinkSync(IMAGE_PATH + "/image/small/" + fileName + '.webp');
-            await fs.unlinkSync(IMAGE_PATH + "/image/extra_small/" + fileName + '.webp');
+            await fs.unlinkSync(IMAGE_PATH + "/image/extra_big/" + fileName + '.jpeg');
+            // await fs.unlinkSync(IMAGE_PATH + "/image/medium/" + fileName + '.jpeg');
+            // await fs.unlinkSync(IMAGE_PATH + "/image/small/" + fileName + '.jpeg');
+            // await fs.unlinkSync(IMAGE_PATH + "/image/extra_small/" + fileName + '.jpeg');
+            await fs.unlinkSync(IMAGE_PATH + "/image/extra_big/" + fileName + '.webp');
+            // await fs.unlinkSync(IMAGE_PATH + "/image/medium/" + fileName + '.webp');
+            // await fs.unlinkSync(IMAGE_PATH + "/image/small/" + fileName + '.webp');
+            // await fs.unlinkSync(IMAGE_PATH + "/image/extra_small/" + fileName + '.webp');
             res.send(true);
         } catch (e) {
             res.send(false);

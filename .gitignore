@@ -9,6 +9,7 @@ yarn-error.log*
 node_modules
 dist
 .nuxt
+.history
 # Runtime data
 pids
 *.pid
