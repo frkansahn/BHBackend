@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 var publicFunction = require('./public.js');
 
 router.get('/sitemap', async function(req, res, next) {
-	var query = 'Select seo_link From medicines WHERE is_active = 1 LIMIT 50000';
+	var query = 'Select seo_link,updatedAt,createdAt From medicines WHERE is_active = 1 LIMIT 50000';
 	connection.query(query, function (results, error, fields) {
 		if(error){
 			res.send({"status": 500, "error": error, "response": null}); 
